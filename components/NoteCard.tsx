@@ -7,7 +7,7 @@ import {
   Pressable,
 } from 'react-native';
 import { Note, useNotes } from '../hooks/useNotes';
-import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { CalendarIcon, Trash2 } from 'lucide-react-native';
 import { estimateReadTime } from '@/lib/util';
 import { ConfirmModal } from './common/DeleteModal';
@@ -71,7 +71,7 @@ export default function NoteCard({ note, onSelect, onDelete }: NoteCardProps) {
             <View style={[styles.options, { gap: 3 }]}>
               <CalendarIcon size={10} />
               <Text style={styles.updatedAt}>
-                {formatDistanceToNow(new Date(note.created_at), {
+                {formatDistanceToNowStrict(new Date(note.created_at), {
                   addSuffix: true,
                 })}
               </Text>
