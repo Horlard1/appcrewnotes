@@ -22,6 +22,7 @@ export default function NotesScreen() {
   const {
     notes,
     loading: notesLoading,
+    error: notesError,
     createNote,
     updateNote,
     deleteNote,
@@ -118,6 +119,37 @@ export default function NotesScreen() {
               <View style={styles.loaderContainer}>
                 <ActivityIndicator size="small" color="#2596BE" />
               </View>
+            ) : notesError ? (
+              <FlatList
+                data={[]}
+                renderItem={() => null}
+                keyExtractor={() => ''}
+                ListEmptyComponent={
+                  <View style={styles.errorContainer}>
+                    <View style={styles.errorBox}>
+                      <Text style={styles.errorTitle}>⚠️ Connection Error</Text>
+                      <Text style={styles.errorMessage}>{notesError}</Text>
+                      <TouchableOpacity
+                        style={styles.retryButton}
+                        onPress={handleRefresh}
+                        disabled={refreshing}
+                      >
+                        <Text style={styles.retryButtonText}>
+                          {refreshing ? 'Retrying...' : 'Retry'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                }
+                contentContainerStyle={styles.scrollContainer}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor="#2596BE"
+                  />
+                }
+              />
             ) : notes.length === 0 ? (
               <FlatList
                 data={[]}
@@ -182,6 +214,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  errorBox: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 12,
+    padding: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#DC2626',
+    alignItems: 'center',
+  },
+  errorTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#DC2626',
+    marginBottom: 8,
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#991B1B',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  retryButton: {
+    backgroundColor: '#DC2626',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
   header: {
     padding: 16,

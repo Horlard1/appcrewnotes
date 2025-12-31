@@ -15,24 +15,31 @@ export interface Note {
 export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   const fetchNotes = async () => {
     if (!user) {
       setNotes([]);
       setLoading(false);
+      setError(null);
       return;
     }
 
     try {
-      const { data, error } = await supabase
+      setError(null);
+      const { data, error: fetchError } = await supabase
         .from('notes')
         .select('*')
         .order('updated_at', { ascending: false });
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
       setNotes(data || []);
     } catch (error: any) {
+      const errorMessage =
+        error?.message ||
+        'Failed to fetch notes. Please check your connection.';
+      setError(errorMessage);
       setNotes([]);
     } finally {
       setLoading(false);
@@ -47,7 +54,7 @@ export function useNotes() {
     if (!user) return null;
 
     try {
-      const { data, error } = await supabase
+      const { data, error: createError } = await supabase
         .from('notes')
         .insert({
           title,
@@ -57,45 +64,54 @@ export function useNotes() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (createError) throw createError;
 
       setNotes((prev) => [data, ...prev]);
-
+      setError(null);
       return data;
     } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to create note';
+      setError(errorMessage);
       return null;
     }
   };
 
   const updateNote = async (id: string, title: string, content: string) => {
     try {
-      const { data, error } = await supabase
+      const { data, error: updateError } = await supabase
         .from('notes')
         .update({ title, content })
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       setNotes((prev) => prev.map((note) => (note.id === id ? data : note)));
-
+      setError(null);
       return data;
     } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to update note';
+      setError(errorMessage);
       return null;
     }
   };
 
   const deleteNote = async (id: string) => {
     try {
-      const { error } = await supabase.from('notes').delete().eq('id', id);
+      const { error: deleteError } = await supabase
+        .from('notes')
+        .delete()
+        .eq('id', id);
 
-      if (error) throw error;
+      if (deleteError) throw deleteError;
 
       setNotes((prev) => prev.filter((note) => note.id !== id));
-
+      setError(null);
       return true;
     } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to delete note';
+      setError(errorMessage);
       return false;
     }
   };
@@ -103,6 +119,7 @@ export function useNotes() {
   return {
     notes,
     loading,
+    error,
     createNote,
     updateNote,
     deleteNote,
