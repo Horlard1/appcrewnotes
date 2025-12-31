@@ -10,14 +10,16 @@ import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { ToastProvider, useToast } from '@/hooks/useToast';
 
 function MainProfile() {
   const { user, loading: authLoading, signOut } = useAuth();
-
+  const { showToast } = useToast();
   const router = useRouter();
 
   const handleSignOut = async () => {
     await signOut();
+    showToast('Log out successfully', 'success');
     router.back();
   };
 
@@ -60,9 +62,11 @@ function MainProfile() {
 
 export default function Profile() {
   return (
-    <AuthProvider>
-      <MainProfile />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <MainProfile />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 
