@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Keyboard,
   Pressable,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
@@ -105,109 +106,116 @@ export default function Auth() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Pressable style={StyleSheet.absoluteFill} onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={100}
-        >
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag"
-            showsVerticalScrollIndicator={true}
-            contentContainerStyle={{ flexGrow: 1 }}
+    <>
+      <StatusBar
+        translucent
+        backgroundColor="#FFF7ED"
+        barStyle="light-content"
+      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={100}
           >
-            <View style={styles.container}>
-              <View style={styles.cardWrapper}>
-                <View style={styles.header}>
-                  <View style={styles.iconWrapper}>
-                    <FileText size={32} color="#2596BE" />
-                  </View>
-
-                  <Text style={styles.title}>Notes</Text>
-                  <Text style={styles.subtitle}>
-                    {isLogin ? 'Welcome back' : 'Create your account'}
-                  </Text>
-                </View>
-
-                <View style={styles.card}>
-                  <View style={styles.field}>
-                    <Text style={styles.label}>Email</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="you@example.com"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      value={email}
-                      onChangeText={setEmail}
-                    />
-                    {errors.email && (
-                      <Text style={styles.errorText}>{errors.email}</Text>
-                    )}
-                  </View>
-
-                  <PasswordInput
-                    value={password}
-                    onChangeText={setPassword}
-                    error={errors.password}
-                  />
-
-                  {!isLogin && (
-                    <PasswordInput
-                      label="Confirm Password"
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      error={errors.confirmPassword}
-                    />
-                  )}
-
-                  {authError && (
-                    <View style={styles.authErrorBox}>
-                      <Text style={styles.errorText}>{authError}</Text>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+              showsVerticalScrollIndicator={true}
+              contentContainerStyle={{ flexGrow: 1 }}
+            >
+              <View style={styles.container}>
+                <View style={styles.cardWrapper}>
+                  <View style={styles.header}>
+                    <View style={styles.iconWrapper}>
+                      <FileText size={32} color="#2596BE" />
                     </View>
-                  )}
 
-                  <Pressable
-                    style={[styles.button, loading && styles.buttonDisabled]}
-                    onPress={handleSubmit}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <Text style={styles.buttonText}>
-                        {isLogin ? 'Log in' : 'Sign up'}
-                      </Text>
+                    <Text style={styles.title}>Notes</Text>
+                    <Text style={styles.subtitle}>
+                      {isLogin ? 'Welcome back' : 'Create your account'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.card}>
+                    <View style={styles.field}>
+                      <Text style={styles.label}>Email</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="you@example.com"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
+                      />
+                      {errors.email && (
+                        <Text style={styles.errorText}>{errors.email}</Text>
+                      )}
+                    </View>
+
+                    <PasswordInput
+                      value={password}
+                      onChangeText={setPassword}
+                      error={errors.password}
+                    />
+
+                    {!isLogin && (
+                      <PasswordInput
+                        label="Confirm Password"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        error={errors.confirmPassword}
+                      />
                     )}
-                  </Pressable>
 
-                  {/* Toggle */}
-                  <View style={styles.footer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsLogin(!isLogin);
-                        setAuthError(null);
-                        setErrors({});
-                      }}
+                    {authError && (
+                      <View style={styles.authErrorBox}>
+                        <Text style={styles.errorText}>{authError}</Text>
+                      </View>
+                    )}
+
+                    <Pressable
+                      style={[styles.button, loading && styles.buttonDisabled]}
+                      onPress={handleSubmit}
+                      disabled={loading}
                     >
-                      <Text style={styles.footerText}>
-                        {isLogin
-                          ? "Don't have an account? "
-                          : 'Already have an account? '}
-                        <Text style={styles.footerLink}>
-                          {isLogin ? 'Sign up' : 'Log in'}
+                      {loading ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <Text style={styles.buttonText}>
+                          {isLogin ? 'Log in' : 'Sign up'}
                         </Text>
-                      </Text>
-                    </TouchableOpacity>
+                      )}
+                    </Pressable>
+
+                    {/* Toggle */}
+                    <View style={styles.footer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setIsLogin(!isLogin);
+                          setAuthError(null);
+                          setErrors({});
+                        }}
+                      >
+                        <Text style={styles.footerText}>
+                          {isLogin
+                            ? "Don't have an account? "
+                            : 'Already have an account? '}
+                          <Text style={styles.footerLink}>
+                            {isLogin ? 'Sign up' : 'Log in'}
+                          </Text>
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </Pressable>
-    </SafeAreaView>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </Pressable>
+      </SafeAreaView>
+    </>
   );
 }
 
