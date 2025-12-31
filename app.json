@@ -30,7 +30,9 @@
       "router": {},
       "eas": {
         "projectId": "f745cef9-da31-412d-9418-5400ba37e534"
-      }
+      },
+      "supabaseUrl": "@SUPABASE_URL",
+      "supabaseKey": "@SUPABASE_ANON_KEY"
     },
     "owner": "horlard1"
   }
