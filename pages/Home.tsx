@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
@@ -86,7 +86,11 @@ export default function NotesScreen() {
             </View>
             <View>
               <Text style={styles.title}>Notes</Text>
-              <Text style={styles.subtitle}>{notes.length} notes</Text>
+              {notes?.length ? (
+                <Text style={styles.subtitle}>
+                  {notes.length} note{notes?.length > 1 ? 's' : ''}
+                </Text>
+              ) : null}
             </View>
           </View>
 
@@ -109,35 +113,53 @@ export default function NotesScreen() {
 
       <View style={styles.container}>
         {!showEditor ? (
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor="#2596BE"
-              />
-            }
-          >
+          <>
             {notesLoading ? (
               <View style={styles.loaderContainer}>
                 <ActivityIndicator size="small" color="#2596BE" />
               </View>
             ) : notes.length === 0 ? (
-              <EmptyState onCreateNote={handleCreateNote} />
-            ) : (
-              notes.map((note) => (
-                <View key={note.id} style={{ marginBottom: 12 }}>
-                  <NoteCard
-                    note={note}
-                    onSelect={handleSelectNote}
-                    onDelete={handleDelete}
+              <FlatList
+                data={[]}
+                renderItem={() => null}
+                keyExtractor={() => ''}
+                ListEmptyComponent={
+                  <EmptyState onCreateNote={handleCreateNote} />
+                }
+                contentContainerStyle={styles.scrollContainer}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor="#2596BE"
                   />
-                </View>
-              ))
+                }
+              />
+            ) : (
+              <FlatList
+                data={notes}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={{ marginBottom: 12 }}>
+                    <NoteCard
+                      note={item}
+                      onSelect={handleSelectNote}
+                      onDelete={handleDelete}
+                    />
+                  </View>
+                )}
+                contentContainerStyle={styles.scrollContainer}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor="#2596BE"
+                  />
+                }
+                showsVerticalScrollIndicator={false}
+              />
             )}
-          </ScrollView>
+          </>
         ) : (
           <NoteEditor
             note={selectedNote}
