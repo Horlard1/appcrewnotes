@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import Auth from '../pages/Auth';
 import Home from '../pages/Home';
+import { ToastProvider } from '@/hooks/useToast';
 
 function Root() {
   const { user, loading } = useAuth();
@@ -15,8 +16,10 @@ function Root() {
 
 export default function Index() {
   return (
-    <AuthProvider>
-      <Root />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Root />
+      </AuthProvider>
+    </ToastProvider>
   );
 }

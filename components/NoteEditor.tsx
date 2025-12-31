@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Note } from '../hooks/useNotes';
 import { ArrowLeft, Save } from 'lucide-react-native';
+import { useToast } from '@/hooks/useToast';
 
 interface NoteEditorProps {
   note: Note | null;
@@ -30,6 +31,7 @@ export default function NoteEditor({
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (note) {
@@ -45,15 +47,25 @@ export default function NoteEditor({
 
   const handleSave = async () => {
     if (!title.trim() && !content.trim()) return;
-
     setSaving(true);
-    const result = await onSave(title || 'Untitled', content);
-    setSaving(false);
+    try {
+      const result = await onSave(title || 'Untitled', content);
+      setSaving(false);
 
-    if (result && isNew) {
-      onBack();
-    } else {
-      setHasChanges(false);
+      if (result && isNew) {
+        onBack();
+        showToast('New note created successfully', 'success');
+      } else {
+        setHasChanges(false);
+        showToast('Note saved successfully', 'success');
+      }
+    } catch (error) {
+      setSaving(false);
+      if (note) {
+        showToast('Failed to save note', 'error');
+      } else {
+        showToast('Failed to create new note', 'error');
+      }
     }
   };
 
@@ -62,7 +74,6 @@ export default function NoteEditor({
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <ArrowLeft size={20} color="#0F172A" />
@@ -89,7 +100,6 @@ export default function NoteEditor({
         </TouchableOpacity>
       </View>
 
-      {/* Editor */}
       <ScrollView contentContainerStyle={styles.editorContainer}>
         <TextInput
           style={styles.titleInput}

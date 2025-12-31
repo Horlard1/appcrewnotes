@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  RefreshControl,
 } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotes, Note } from '../hooks/useNotes';
@@ -17,17 +18,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 
 export default function NotesScreen() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const {
     notes,
     loading: notesLoading,
     createNote,
     updateNote,
     deleteNote,
+    refetch,
   } = useNotes();
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleCreateNote = () => {
     setSelectedNote(null);
@@ -48,6 +51,12 @@ export default function NotesScreen() {
     if (isCreating) return await createNote(title, content);
     if (selectedNote) return await updateNote(selectedNote.id, title, content);
     return null;
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -103,6 +112,13 @@ export default function NotesScreen() {
           <ScrollView
             contentContainerStyle={styles.scrollContainer}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor="#2596BE"
+              />
+            }
           >
             {notesLoading ? (
               <View style={styles.loaderContainer}>

@@ -16,7 +16,6 @@ export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  //   const { toast } = useToast();
 
   const fetchNotes = async () => {
     if (!user) {
@@ -34,11 +33,7 @@ export function useNotes() {
       if (error) throw error;
       setNotes(data || []);
     } catch (error: any) {
-      //   toast({
-      //     title: 'Error fetching notes',
-      //     description: error.message,
-      //     variant: 'destructive',
-      //   });
+      setNotes([]);
     } finally {
       setLoading(false);
     }
@@ -65,17 +60,9 @@ export function useNotes() {
       if (error) throw error;
 
       setNotes((prev) => [data, ...prev]);
-      //   toast({
-      //     title: 'Note created',
-      //     description: 'Your note has been saved.',
-      //   });
+
       return data;
     } catch (error: any) {
-      //   toast({
-      //     title: 'Error creating note',
-      //     description: error.message,
-      //     variant: 'destructive',
-      //   });
       return null;
     }
   };
@@ -92,17 +79,9 @@ export function useNotes() {
       if (error) throw error;
 
       setNotes((prev) => prev.map((note) => (note.id === id ? data : note)));
-      //   toast({
-      //     title: 'Note updated',
-      //     description: 'Your changes have been saved.',
-      //   });
+
       return data;
     } catch (error: any) {
-      //   toast({
-      //     title: 'Error updating note',
-      //     description: error.message,
-      //     variant: 'destructive',
-      //   });
       return null;
     }
   };
@@ -114,17 +93,9 @@ export function useNotes() {
       if (error) throw error;
 
       setNotes((prev) => prev.filter((note) => note.id !== id));
-      //   toast({
-      //     title: 'Note deleted',
-      //     description: 'Your note has been removed.',
-      //   });
+
       return true;
     } catch (error: any) {
-      //   toast({
-      //     title: 'Error deleting note',
-      //     description: error.message,
-      //     variant: 'destructive',
-      //   });
       return false;
     }
   };

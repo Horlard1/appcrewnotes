@@ -11,6 +11,7 @@ import { formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
 import { CalendarIcon, Trash2 } from 'lucide-react-native';
 import { estimateReadTime } from '@/lib/util';
 import { ConfirmModal } from './common/DeleteModal';
+import { useToast } from '@/hooks/useToast';
 
 interface NoteCardProps {
   note: Note;
@@ -19,6 +20,7 @@ interface NoteCardProps {
 }
 
 export default function NoteCard({ note, onSelect, onDelete }: NoteCardProps) {
+  const { showToast } = useToast();
   const { deleteNote } = useNotes();
 
   const [open, setOpen] = useState(false);
@@ -26,9 +28,16 @@ export default function NoteCard({ note, onSelect, onDelete }: NoteCardProps) {
 
   const handleConfirm = async () => {
     setLoading(true);
-    await deleteNote(note.id);
-    setLoading(false);
-    setOpen(false);
+    try {
+      await deleteNote(note.id);
+      setLoading(false);
+      setOpen(false);
+      onDelete(note.id);
+      showToast('Note deleted successfully', 'success');
+    } catch (error) {
+      setLoading(false);
+      showToast('Failed to delete note', 'error');
+    }
   };
 
   return (
